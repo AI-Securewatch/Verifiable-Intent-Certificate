@@ -20,13 +20,17 @@ _PUBLIC_KEY_FINGERPRINT = hashlib.sha256(_PUBLIC_KEY.public_bytes(Encoding.Raw, 
 
 class PolicyRules(BaseModel):
     name: str
-    maxAmount: float
-    approvedEntities: List[str]
-    blockWeekends: bool
-    businessHoursOnly: bool
-    firstTimeEntityHold: bool
-    mfaThreshold: float
-    softBlockPercent: float
+    maxAmount: Optional[float] = 0
+    approvedEntities: List[str] = []
+    blockWeekends: Optional[bool] = False
+    businessHoursOnly: Optional[bool] = False
+    firstTimeHold: Optional[bool] = False
+    mfaThreshold: Optional[float] = 0
+    daily_limit: Optional[float] = 0
+    weekly_limit: Optional[float] = 0
+    monthly_limit: Optional[float] = 0
+    risk_score_threshold: Optional[float] = 0
+    min_credit_score: Optional[float] = 0
 
 class VerifyRequest(BaseModel):
     vendor: str
@@ -58,29 +62,60 @@ async def verify_payment(request: VerifyRequest):
     reasons = []
     approved = True
     
-    if request.policy.maxAmount > 0 and request.amount > request.policy.maxAmount:
-        reasons.append(f"Amount ${request.amount:,.2f} exceeds limit of ${request.policy.maxAmount:,.0f}")
+    # Amount limit check
+    if request.policy.maxAmount and request.policy.maxAmount > 0 and request.amount > request.policy.maxAmount:
+        reasons.append(f"Amount ${request.amount:,.2f} exceeds policy limit of ${request.policy.maxAmount:,.0f}")
         approved = False
     
+    # Daily limit check (simplified for demo)
+    if request.policy.daily_limit and request.policy.daily_limit > 0 and request.amount > request.policy.daily_limit:
+        reasons.append(f"Amount exceeds daily limit of ${request.policy.daily_limit:,.0f}")
+        approved = False
+    
+    # Weekly limit check
+    if request.policy.weekly_limit and request.policy.weekly_limit > 0 and request.amount > request.policy.weekly_limit:
+        reasons.append(f"Amount exceeds weekly limit of ${request.policy.weekly_limit:,.0f}")
+        approved = False
+    
+    # Monthly limit check
+    if request.policy.monthly_limit and request.policy.monthly_limit > 0 and request.amount > request.policy.monthly_limit:
+        reasons.append(f"Amount exceeds monthly limit of ${request.policy.monthly_limit:,.0f}")
+        approved = False
+    
+    # Entity allowlist check
     if request.policy.approvedEntities and len(request.policy.approvedEntities) > 0:
         if request.vendor not in request.policy.approvedEntities:
-            reasons.append(f"Entity '{request.vendor}' not on approved list")
+            reasons.append(f"Entity '{request.vendor}' is not on the approved list")
             approved = False
     
+    # Weekend check
     if request.policy.blockWeekends and now.weekday() >= 5:
         reasons.append("Weekend decisions are blocked by policy")
         approved = False
     
+    # Business hours check
     if request.policy.businessHoursOnly and (now.hour < 9 or now.hour >= 17):
-        reasons.append("Decisions outside business hours are blocked")
+        reasons.append("Decisions outside business hours (9am-5pm) are blocked")
         approved = False
     
-    if request.policy.firstTimeEntityHold:
+    # First-time entity hold
+    if request.policy.firstTimeHold:
         reasons.append("First-time entity requires manual approval")
         approved = False
     
-    if request.policy.mfaThreshold > 0 and request.amount > request.policy.mfaThreshold:
+    # MFA threshold
+    if request.policy.mfaThreshold and request.policy.mfaThreshold > 0 and request.amount > request.policy.mfaThreshold:
         reasons.append(f"Amount over ${request.policy.mfaThreshold:,.0f} requires MFA approval")
+        approved = False
+    
+    # Risk score threshold (placeholder - would need actual risk score)
+    if request.policy.risk_score_threshold and request.policy.risk_score_threshold > 0:
+        reasons.append(f"Risk score exceeds threshold of {request.policy.risk_score_threshold} (simulated)")
+        approved = False
+    
+    # Minimum credit score (placeholder)
+    if request.policy.min_credit_score and request.policy.min_credit_score > 0:
+        reasons.append(f"Credit score below minimum of {request.policy.min_credit_score} (simulated)")
         approved = False
     
     vic_id = f"VIC-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
