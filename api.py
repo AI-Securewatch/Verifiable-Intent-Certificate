@@ -19,12 +19,12 @@ _PUBLIC_KEY = _key.public_key()
 _PUBLIC_KEY_FINGERPRINT = hashlib.sha256(_PUBLIC_KEY.public_bytes(Encoding.Raw, PublicFormat.Raw)).hexdigest()[:16]
 
 class PolicyRules(BaseModel):
-    name: Optional[str] = None
+    name: str
     maxAmount: float
-    approvedVendors: List[str]
+    approvedEntities: List[str]
     blockWeekends: bool
     businessHoursOnly: bool
-    firstPaymentHold: bool
+    firstTimeEntityHold: bool
     mfaThreshold: float
     softBlockPercent: float
 
@@ -32,6 +32,7 @@ class VerifyRequest(BaseModel):
     vendor: str
     amount: float
     agent_id: Optional[str] = None
+    decision_type: str
     policy: PolicyRules
 
 class VICResponse(BaseModel):
@@ -40,6 +41,8 @@ class VICResponse(BaseModel):
     vendor: str
     amount: float
     agent_id: Optional[str]
+    decision_type: str
+    policy_name: str
     approved: bool
     signature: str
     public_key_fingerprint: str
@@ -55,38 +58,31 @@ async def verify_payment(request: VerifyRequest):
     reasons = []
     approved = True
     
-    # Amount limit check
-    if request.amount > request.policy.maxAmount:
-        reasons.append(f"Amount ${request.amount:,.2f} exceeds policy limit of ${request.policy.maxAmount:,.0f}")
+    if request.policy.maxAmount > 0 and request.amount > request.policy.maxAmount:
+        reasons.append(f"Amount ${request.amount:,.2f} exceeds limit of ${request.policy.maxAmount:,.0f}")
         approved = False
     
-    # Vendor allowlist check
-    if request.policy.approvedVendors and len(request.policy.approvedVendors) > 0:
-        if request.vendor not in request.policy.approvedVendors:
-            reasons.append(f"Vendor '{request.vendor}' is not on the approved list")
+    if request.policy.approvedEntities and len(request.policy.approvedEntities) > 0:
+        if request.vendor not in request.policy.approvedEntities:
+            reasons.append(f"Entity '{request.vendor}' not on approved list")
             approved = False
     
-    # Weekend check
     if request.policy.blockWeekends and now.weekday() >= 5:
-        reasons.append("Weekend payments are blocked by policy")
+        reasons.append("Weekend decisions are blocked by policy")
         approved = False
     
-    # Business hours check
     if request.policy.businessHoursOnly and (now.hour < 9 or now.hour >= 17):
-        reasons.append("Payments outside business hours (9am-5pm) are blocked")
+        reasons.append("Decisions outside business hours are blocked")
         approved = False
     
-    # First payment hold
-    if request.policy.firstPaymentHold:
-        reasons.append("First payment to new vendor requires manual approval")
+    if request.policy.firstTimeEntityHold:
+        reasons.append("First-time entity requires manual approval")
         approved = False
     
-    # MFA threshold
-    if request.amount > request.policy.mfaThreshold:
+    if request.policy.mfaThreshold > 0 and request.amount > request.policy.mfaThreshold:
         reasons.append(f"Amount over ${request.policy.mfaThreshold:,.0f} requires MFA approval")
         approved = False
     
-    # Generate VIC
     vic_id = f"VIC-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
     vic_data = {
         "vic_id": vic_id,
@@ -94,13 +90,13 @@ async def verify_payment(request: VerifyRequest):
         "vendor": request.vendor,
         "amount": request.amount,
         "agent_id": request.agent_id,
+        "decision_type": request.decision_type,
+        "policy_name": request.policy.name,
         "approved": approved,
-        "policy_name": request.policy.name or "Default Policy",
         "reasons": reasons,
         "public_key_fingerprint": _PUBLIC_KEY_FINGERPRINT
     }
     
-    # Sign the VIC data
     canonical_string = json.dumps(vic_data, sort_keys=True, separators=(',', ':'))
     signature = _key.sign(canonical_string.encode())
     signature_b64 = base64.b64encode(signature).decode()
@@ -111,6 +107,8 @@ async def verify_payment(request: VerifyRequest):
         vendor=request.vendor,
         amount=request.amount,
         agent_id=request.agent_id,
+        decision_type=request.decision_type,
+        policy_name=request.policy.name,
         approved=approved,
         signature=signature_b64,
         public_key_fingerprint=_PUBLIC_KEY_FINGERPRINT,
