@@ -145,6 +145,26 @@ PayReality API (FastAPI + Ed25519)
 
 ---
 
+## Testing
+
+PayReality uses Jest for unit/component testing and Playwright for end-to-end (E2E) testing.
+
+### Run Unit Tests
+
+```bash
+npm run test
+```
+
+### Run E2E Tests
+
+*Note: Playwright requires Node.js >= 20.9.0 to run with Next.js.*
+
+```bash
+npm run test:e2e
+```
+
+---
+
 ## Patent Information
 
 **Provisional Patent PPN00002476** – Verifiable Intent Certificates for AI Payment Governance

@@ -39,15 +39,15 @@ export default function PaymentHistory() {
   const totalBlocked = history.filter(v => !v.approved).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-6">
-          <Link href="/" className="text-sm text-blue-600 hover:text-blue-800">← Back to Dashboard</Link>
-          <h1 className="text-2xl font-semibold text-gray-800 mt-4">Live Payment Queue</h1>
+          <Link href="/" className="text-sm text-primary hover:text-[#A8321C]">← Back to Dashboard</Link>
+          <h1 className="text-2xl font-semibold text-white mt-4">Live Payment Queue</h1>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Auto-refresh</span>
+              <span className="text-sm text-[#9CA3AF]">Auto-refresh</span>
               <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">ON</span>
             </div>
           </div>
@@ -58,7 +58,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => setFilter("all")}
             className={`px-5 py-2 text-sm font-medium rounded-md transition ${
-              filter === "all" ? "bg-gray-800 text-white" : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+              filter === "all" ? "bg-gray-800 text-white" : "bg-transparent text-gray-400 border border-white/10 hover:bg-transparent"
             }`}
           >
             All ({history.length})
@@ -66,7 +66,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => setFilter("approved")}
             className={`px-5 py-2 text-sm font-medium rounded-md transition ${
-              filter === "approved" ? "bg-green-600 text-white" : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+              filter === "approved" ? "bg-green-600 text-white" : "bg-transparent text-gray-400 border border-white/10 hover:bg-transparent"
             }`}
           >
             Approved ({totalApproved})
@@ -74,7 +74,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => setFilter("blocked")}
             className={`px-5 py-2 text-sm font-medium rounded-md transition ${
-              filter === "blocked" ? "bg-red-600 text-white" : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
+              filter === "blocked" ? "bg-red-600 text-white" : "bg-transparent text-gray-400 border border-white/10 hover:bg-transparent"
             }`}
           >
             Blocked ({totalBlocked})
@@ -82,18 +82,18 @@ export default function PaymentHistory() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+        <div className="glass-panel overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Agent</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Vendor</th>
-                  <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Policy</th>
-                  <th className="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Verdict</th>
-                  <th className="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                <tr className="bg-transparent border-b border-white/10">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Time</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Agent</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Vendor</th>
+                  <th className="text-right px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Amount</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Policy</th>
+                  <th className="text-center px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Verdict</th>
+                  <th className="text-center px-6 py-3 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -105,20 +105,20 @@ export default function PaymentHistory() {
                   </tr>
                 ) : (
                   filteredHistory.map((v, i) => (
-                    <tr key={i} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                      <td className="px-6 py-3 text-sm text-gray-600 font-mono">
+                    <tr key={i} className="border-b border-gray-100 hover:bg-transparent transition">
+                      <td className="px-6 py-3 text-sm text-gray-400 font-mono">
                         {formatTime(v.timestamp)}
                       </td>
-                      <td className="px-6 py-3 text-sm text-gray-500">
+                      <td className="px-6 py-3 text-sm text-[#9CA3AF]">
                         {v.agent_id || "AI Agent"}
                       </td>
-                      <td className="px-6 py-3 text-sm font-medium text-gray-800">
+                      <td className="px-6 py-3 text-sm font-medium text-white">
                         {v.vendor}
                       </td>
-                      <td className="px-6 py-3 text-sm text-right font-medium text-gray-800">
+                      <td className="px-6 py-3 text-sm text-right font-medium text-white">
                         ${v.amount?.toLocaleString()}
                       </td>
-                      <td className="px-6 py-3 text-sm text-gray-500">
+                      <td className="px-6 py-3 text-sm text-[#9CA3AF]">
                         {v.policy_name || "Policy #001"}
                       </td>
                       <td className="px-6 py-3 text-center">
@@ -131,7 +131,7 @@ export default function PaymentHistory() {
                       <td className="px-6 py-3 text-center">
                         <button
                           onClick={() => setSelectedVIC(v)}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          className="text-primary hover:text-[#A8321C] text-sm font-medium"
                         >
                           View
                         </button>
@@ -147,51 +147,51 @@ export default function PaymentHistory() {
         {/* VIC Certificate Modal */}
         {selectedVIC && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setSelectedVIC(null)}>
-            <div className="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="bg-transparent rounded-2xl max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
               {/* Modal Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+              <div className="sticky top-0 bg-transparent border-b border-white/10 px-6 py-4 flex justify-between items-center rounded-t-2xl">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Verifiable Intent Certificate</h3>
+                  <h3 className="text-lg font-semibold font-display text-white">Verifiable Intent Certificate</h3>
                   <p className="text-xs text-gray-400 mt-1">Cryptographically signed • Ed25519</p>
                 </div>
-                <button onClick={() => setSelectedVIC(null)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+                <button onClick={() => setSelectedVIC(null)} className="text-gray-400 hover:text-gray-400 text-2xl leading-none">×</button>
               </div>
               
               {/* Certificate Content */}
               <div className="p-6 space-y-5">
                 {/* Status Banner */}
                 <div className={`rounded-xl p-4 text-center ${selectedVIC.approved ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
-                  <div className={`text-2xl font-bold ${selectedVIC.approved ? "text-green-700" : "text-red-700"}`}>
+                  <div className={`text-2xl font-bold font-display ${selectedVIC.approved ? "text-green-700" : "text-red-700"}`}>
                     {selectedVIC.approved ? "✓ PAYMENT APPROVED" : "✗ PAYMENT BLOCKED"}
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">Verifiable Intent Certificate issued at settlement time</div>
+                  <div className="text-xs text-[#9CA3AF] mt-1">Verifiable Intent Certificate issued at settlement time</div>
                 </div>
                 
                 {/* Certificate Details Grid */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-transparent rounded-lg p-3">
                     <div className="text-xs text-gray-400 uppercase tracking-wider">Certificate ID</div>
-                    <div className="font-mono text-sm text-gray-800 mt-1 break-all">{selectedVIC.vic_id}</div>
+                    <div className="font-mono text-sm text-white mt-1 break-all">{selectedVIC.vic_id}</div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-transparent rounded-lg p-3">
                     <div className="text-xs text-gray-400 uppercase tracking-wider">Timestamp</div>
-                    <div className="text-sm text-gray-800 mt-1">{new Date(selectedVIC.timestamp).toLocaleString()}</div>
+                    <div className="text-sm text-white mt-1">{new Date(selectedVIC.timestamp).toLocaleString()}</div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-transparent rounded-lg p-3">
                     <div className="text-xs text-gray-400 uppercase tracking-wider">Vendor</div>
-                    <div className="text-sm font-medium text-gray-800 mt-1">{selectedVIC.vendor}</div>
+                    <div className="text-sm font-medium text-white mt-1">{selectedVIC.vendor}</div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-transparent rounded-lg p-3">
                     <div className="text-xs text-gray-400 uppercase tracking-wider">Amount</div>
-                    <div className="text-lg font-bold text-gray-900 mt-1">${selectedVIC.amount?.toLocaleString()}</div>
+                    <div className="text-lg font-bold text-white mt-1">${selectedVIC.amount?.toLocaleString()}</div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-transparent rounded-lg p-3">
                     <div className="text-xs text-gray-400 uppercase tracking-wider">Agent</div>
-                    <div className="text-sm text-gray-800 mt-1">{selectedVIC.agent_id || "AI Agent"}</div>
+                    <div className="text-sm text-white mt-1">{selectedVIC.agent_id || "AI Agent"}</div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-transparent rounded-lg p-3">
                     <div className="text-xs text-gray-400 uppercase tracking-wider">Policy Applied</div>
-                    <div className="text-sm text-gray-800 mt-1">{selectedVIC.policy_name || "Default Policy"}</div>
+                    <div className="text-sm text-white mt-1">{selectedVIC.policy_name || "Default Policy"}</div>
                   </div>
                 </div>
                 
@@ -206,25 +206,25 @@ export default function PaymentHistory() {
                 )}
                 
                 {/* Signature Section */}
-                <div className="bg-gray-50 rounded-xl p-4">
+                <div className="bg-transparent rounded-xl p-4">
                   <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">Ed25519 Signature</div>
-                  <div className="font-mono text-xs text-gray-600 break-all bg-white p-3 rounded-lg border border-gray-200">
+                  <div className="font-mono text-xs text-gray-400 break-all bg-transparent p-3 rounded-lg border border-white/10">
                     {selectedVIC.signature}
                   </div>
                   <div className="flex items-center gap-2 mt-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-xs text-gray-500">Signature verified • Public key fingerprint: {selectedVIC.public_key_fingerprint}</span>
+                    <span className="text-xs text-[#9CA3AF]">Signature verified • Public key fingerprint: {selectedVIC.public_key_fingerprint}</span>
                   </div>
                 </div>
               </div>
               
               {/* Modal Footer */}
-              <div className="border-t border-gray-200 p-6 bg-gray-50 rounded-b-2xl">
+              <div className="border-t border-white/10 p-6 bg-transparent rounded-b-2xl">
                 <div className="flex gap-3">
-                  <button onClick={() => exportVIC(selectedVIC)} className="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-medium hover:bg-blue-700 transition">
+                  <button onClick={() => exportVIC(selectedVIC)} className="flex-1 bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-[#A8321C] transition">
                     Export Full Certificate (JSON)
                   </button>
-                  <button onClick={() => setSelectedVIC(null)} className="px-6 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-medium hover:bg-gray-300 transition">
+                  <button onClick={() => setSelectedVIC(null)} className="px-6 bg-gray-200 text-gray-300 py-2.5 rounded-xl font-medium hover:bg-gray-300 transition">
                     Close
                   </button>
                 </div>

@@ -421,7 +421,7 @@ export default function Home() {
   };
 
   const TabButton = ({ id, label }) => (
-    <button onClick={() => setActiveTab(id)} className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${activeTab === id ? "bg-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
+    <button onClick={() => setActiveTab(id)} className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${activeTab === id ? "bg-primary text-white shadow-md" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}>
       {label}
     </button>
   );
@@ -440,12 +440,26 @@ export default function Home() {
   const displayedPolicies = showDrafts ? typePolicies : activePolicies;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-transparent">
+
+      <div id="global-brand-preloader" className="fixed inset-0 bg-[#0a0e17] z-[999999] flex flex-col items-center justify-center transition-opacity duration-600" style={{opacity: isInitialized ? 0 : 1, pointerEvents: isInitialized ? 'none' : 'auto'}}>
+        <div className="relative w-[140px] h-[140px] flex items-center justify-center overflow-hidden rounded bg-[#111623] border border-white/5">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#D94028] shadow-[0_0_20px_5px_rgba(217,64,40,0.95)] animate-[preloaderScanSweep_2.2s_linear_infinite_alternate] z-10"></div>
+          <svg className="w-[90px] h-[90px] fill-white animate-[preloaderEyePulse_3s_ease-in-out_infinite_alternate]" viewBox="0 0 1600 1300">
+             <path d="M854.35.01l42.66,3.02c358.52,31.7,669.05,301,742.73,663.38l3.25,19.26v34.13c-1.34,5.98-1.95,12.11-3.42,18.08-24.61,100.06-146.48,139.88-227.39,81.12-58.67-42.6-54.42-93.91-73.98-157.19-71.22-230.41-273.72-366.45-506.93-369.63-246.47-3.36-462.98,142.48-531.6,388.47-14.54,52.14-13.75,105.13-69.79,130.36-71.29,32.1-198.85,2.84-224.49-81.16-2.23-7.28-2.62-15.28-5.38-22.1v-20.08c1.41-1.2,1.55-2.95,1.84-4.64C66.47,300.04,412.69,11.66,789.21,1.05l2.37-1.05h62.78ZM796.28,34.45C457.94,44.42,148.04,277.62,52.48,611.4c-8.34,29.13-23.74,79.18-15.14,107.86,18.65,62.22,115.25,80,168.64,64.3,48.54-14.26,47.36-58.34,58.16-100.1,69.34-268.15,300.6-428.95,568.11-425.39,252.48,3.36,469.69,154.74,541.49,405.53,12.95,45.22,11.81,87.31,49.02,120.49,64.74,57.73,174.66,22.19,186.75-66.93,4.07-29.98-8.63-74.3-17.03-103.76C1497.53,280.27,1184.73,41.29,846.06,34.11l-49.78.33h0Z"/>
+             <path d="M853.37,1250.87h-58.85c-229.12-18.7-387.65-232.7-344.97-464.99,7.41-40.33,29.13-103.11,54.21-135.25,10.02-12.85,25.52-16.45,36.23-2.11,12.27,16.43-3.6,31.09-11.11,44.89-120.9,221.98,23.8,493.64,269.07,513.29,96.86,7.76,204.85-31.49,269.74-106.39,11.97-13.82,29.62-48.12,51.98-31.13,21.71,16.5-3.47,42.6-15.68,56.23-62.97,70.31-156.85,119.55-250.63,125.48Z"/>
+          </svg>
+        </div>
+        <div className="mt-6 font-mono text-[11px] text-[#9CA3AF] text-center tracking-[0.1em]">
+          <span className="text-[#D94028] font-bold">&gt; INITIALIZING_BRAND_CORE</span><br/>
+        </div>
+      </div>
+    
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">PayReality</h1>
-            <p className="text-gray-500 mt-1">Verifiable Intent Certificates for AI Financial Decisions</p>
+            <h1 className="text-3xl font-bold font-display text-white">PayReality</h1>
+            <p className="text-[#9CA3AF] mt-1">Verifiable Intent Certificates for AI Financial Decisions</p>
             <div className="flex gap-2 mt-2 text-xs text-gray-400 font-mono">
               <span>Provisional Patent PPN00002476</span>
               <span>Ed25519 Signatures</span>
@@ -457,7 +471,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="flex gap-3 mb-8 border-b border-gray-200 pb-4">
+        <div className="flex gap-3 mb-8 border-b border-white/10 pb-4">
           <TabButton id="policy" label="Policy Manager" />
           <TabButton id="verify" label="Verify Decision" />
           <TabButton id="simulate" label="AI Simulator" />
@@ -466,33 +480,33 @@ export default function Home() {
 
         {activeTab === "policy" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <div className="glass-panel p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Decision Type</h2>
-                <select 
+                <h2 className="text-lg font-semibold font-display text-white">Decision Type</h2>
+                <select style={{backgroundColor:"rgba(255,255,255,0.05)", color:"white"}} 
                   value={decisionType} 
                   onChange={(e) => handleDecisionTypeChange(e.target.value)}
-                  className="px-3 py-1.5 text-sm bg-gray-100 border border-gray-300 rounded-lg"
+                  className="px-3 py-1.5 text-sm bg-white/5 border border-white/10 rounded-lg"
                 >
                   {DECISION_TYPES.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
+                    <option style={{color:"black"}} key={type.value} value={type.value}>{type.label}</option>
                   ))}
                 </select>
               </div>
               
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-4">
-                  <h2 className="text-lg font-semibold text-gray-900">My Policies</h2>
+                  <h2 className="text-lg font-semibold font-display text-white">My Policies</h2>
                   <button 
                     onClick={() => setShowDrafts(!showDrafts)} 
-                    className={`text-xs px-2 py-1 rounded ${showDrafts ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}
+                    className={`text-xs px-2 py-1 rounded ${showDrafts ? "bg-blue-100 text-blue-700" : "bg-white/5 text-gray-400"}`}
                   >
                     {showDrafts ? "Hide Drafts" : "Show Drafts"}
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setShowTemplateSelector(!showTemplateSelector)} className="px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">Use Template</button>
-                  <button onClick={createNewPolicy} className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">New Policy</button>
+                  <button onClick={() => setShowTemplateSelector(!showTemplateSelector)} className="px-3 py-1.5 text-sm bg-white/5 rounded-lg hover:bg-white/10">Use Template</button>
+                  <button onClick={createNewPolicy} className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg hover:bg-[#A8321C]">New Policy</button>
                 </div>
               </div>
               
@@ -501,7 +515,7 @@ export default function Home() {
                   <button 
                     key={p.id} 
                     onClick={() => loadExistingPolicy(p)} 
-                    className={`px-3 py-1.5 text-sm rounded-lg transition flex items-center gap-2 ${currentPolicyId === p.id ? "bg-blue-100 text-blue-700 border border-blue-300" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition flex items-center gap-2 ${currentPolicyId === p.id ? "bg-[#D94028]/20 text-[#D94028] border border-[#D94028]/50" : "bg-white/5 text-gray-400 hover:bg-white/10"}`}
                   >
                     {p.name}
                     {p.status === "draft" && <span className="text-xs bg-yellow-200 text-yellow-800 px-1 rounded">Draft</span>}
@@ -511,32 +525,32 @@ export default function Home() {
                   </button>
                 ))}
                 {draftPolicies.length > 0 && !showDrafts && (
-                  <button onClick={() => setShowDrafts(true)} className="px-3 py-1.5 text-xs bg-gray-100 text-gray-500 rounded-lg">
+                  <button onClick={() => setShowDrafts(true)} className="px-3 py-1.5 text-xs bg-white/5 text-[#9CA3AF] rounded-lg">
                     +{draftPolicies.length} draft(s)
                   </button>
                 )}
               </div>
               
               {showTemplateSelector && (
-                <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="mb-4 p-4 bg-transparent rounded-lg border border-white/10">
                   <p className="text-sm font-medium mb-2">Reset to default template for {getDecisionLabel(decisionType)}</p>
-                  <button onClick={loadTemplate} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                  <button onClick={loadTemplate} className="px-3 py-1.5 text-sm bg-transparent border border-white/10 rounded-lg hover:bg-transparent">
                     Load Default Template
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+            <div className="glass-panel p-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 mb-0">{isCreatingNew ? "Create New Policy" : "Edit Policy"}</h2>
+                <h2 className="text-xl font-semibold font-display text-white mb-0">{isCreatingNew ? "Create New Policy" : "Edit Policy"}</h2>
                 {rulesToAdd.length > 0 && !showRuleSelector && (
                   <button onClick={() => setShowRuleSelector(true)} className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
                     + Add Rule
                   </button>
                 )}
               </div>
-              <p className="text-gray-500 text-sm mb-6">For: {getDecisionLabel(decisionType)}</p>
+              <p className="text-[#9CA3AF] text-sm mb-6">For: {getDecisionLabel(decisionType)}</p>
               {policy.status === "draft" && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
                   This policy is a draft. It is not yet active for decision verification.
@@ -544,93 +558,93 @@ export default function Home() {
               )}
               
               {showRuleSelector && (
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="mb-6 p-4 bg-transparent rounded-lg border border-white/10">
                   <h3 className="text-sm font-semibold mb-3">Add a rule to this policy:</h3>
                   <div className="flex flex-wrap gap-2">
                     {rulesToAdd.map(rule => (
                       <button
                         key={rule.id}
                         onClick={() => addRuleToPolicy(rule.id)}
-                        className="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
+                        className="px-3 py-1.5 text-xs bg-transparent border border-white/10 rounded-lg hover:bg-white/5"
                       >
                         {rule.name}
                       </button>
                     ))}
                   </div>
-                  <button onClick={() => setShowRuleSelector(false)} className="mt-3 text-xs text-gray-500 hover:text-gray-700">Cancel</button>
+                  <button onClick={() => setShowRuleSelector(false)} className="mt-3 text-xs text-[#9CA3AF] hover:text-gray-300">Cancel</button>
                 </div>
               )}
               
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Policy Name</label>
-                  <input type="text" value={policy.name} onChange={e => setPolicy({...policy, name: e.target.value})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Policy Name</label>
+                  <input type="text" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.name} onChange={e => setPolicy({...policy, name: e.target.value})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                 </div>
                 
                 {activeRules.includes("maxAmount") && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Amount per Decision</label>
-                    <input type="number" value={policy.maxAmount || 0} onChange={e => setPolicy({...policy, maxAmount: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Max Amount per Decision</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.maxAmount || 0} onChange={e => setPolicy({...policy, maxAmount: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                   </div>
                 )}
                 
                 {policy.daily_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Daily Total Limit</label>
-                    <input type="number" value={policy.daily_limit} onChange={e => setPolicy({...policy, daily_limit: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Daily Total Limit</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.daily_limit} onChange={e => setPolicy({...policy, daily_limit: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("daily_limit")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
                 
                 {policy.weekly_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Weekly Total Limit</label>
-                    <input type="number" value={policy.weekly_limit} onChange={e => setPolicy({...policy, weekly_limit: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Weekly Total Limit</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.weekly_limit} onChange={e => setPolicy({...policy, weekly_limit: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("weekly_limit")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
                 
                 {policy.monthly_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Total Limit</label>
-                    <input type="number" value={policy.monthly_limit} onChange={e => setPolicy({...policy, monthly_limit: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Monthly Total Limit</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.monthly_limit} onChange={e => setPolicy({...policy, monthly_limit: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("monthly_limit")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
                 
                 {activeRules.includes("mfaThreshold") && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">MFA Threshold</label>
-                    <input type="number" value={policy.mfaThreshold || 0} onChange={e => setPolicy({...policy, mfaThreshold: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">MFA Threshold</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.mfaThreshold || 0} onChange={e => setPolicy({...policy, mfaThreshold: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                   </div>
                 )}
                 
                 {policy.risk_score_threshold !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Risk Score Threshold (0-100)</label>
-                    <input type="number" value={policy.risk_score_threshold} onChange={e => setPolicy({...policy, risk_score_threshold: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Risk Score Threshold (0-100)</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.risk_score_threshold} onChange={e => setPolicy({...policy, risk_score_threshold: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("risk_score_threshold")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
                 
                 {policy.min_credit_score !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Credit Score</label>
-                    <input type="number" value={policy.min_credit_score} onChange={e => setPolicy({...policy, min_credit_score: parseInt(e.target.value) || 0})} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Minimum Credit Score</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.min_credit_score} onChange={e => setPolicy({...policy, min_credit_score: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("min_credit_score")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Approved Entities (one per line)</label>
-                  <textarea value={(policy.approvedEntities || []).join('\n')} onChange={e => setPolicy({...policy, approvedEntities: e.target.value.split('\n').filter(v => v.trim())})} rows={4} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 font-mono text-sm" />
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Approved Entities (one per line)</label>
+                  <textarea style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={(policy.approvedEntities || []).join('\n')} onChange={e => setPolicy({...policy, approvedEntities: e.target.value.split('\n').filter(v => v.trim())})} rows={4} className="w-full border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm" />
                   <p className="text-xs text-gray-400 mt-1">Leave empty to allow all entities</p>
                 </div>
                 
                 {policy.blocked_entities !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Blocked Entities (one per line)</label>
-                    <textarea value={(policy.blocked_entities || []).join('\n')} onChange={e => setPolicy({...policy, blocked_entities: e.target.value.split('\n').filter(v => v.trim())})} rows={3} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 font-mono text-sm" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Blocked Entities (one per line)</label>
+                    <textarea style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={(policy.blocked_entities || []).join('\n')} onChange={e => setPolicy({...policy, blocked_entities: e.target.value.split('\n').filter(v => v.trim())})} rows={3} className="w-full border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm" />
                     <button onClick={() => removeRuleFromPolicy("blocked_entities")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
@@ -649,10 +663,10 @@ export default function Home() {
               </div>
               
               <div className="flex gap-3 mt-8">
-                <button onClick={() => savePolicyAs("draft")} className="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-medium hover:bg-gray-300">
+                <button onClick={() => savePolicyAs("draft")} className="flex-1 bg-gray-200 text-gray-300 py-2.5 rounded-xl font-medium hover:bg-gray-300">
                   Save as Draft
                 </button>
-                <button onClick={() => savePolicyAs("active")} className="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-medium hover:bg-blue-700">
+                <button onClick={() => savePolicyAs("active")} className="flex-1 bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-[#A8321C]">
                   Publish
                 </button>
               </div>
@@ -662,10 +676,10 @@ export default function Home() {
 
         {activeTab === "verify" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Verify Financial Decision</h2>
-              <p className="text-gray-500 text-sm mb-6">Decision Type: {getDecisionLabel(decisionType)}</p>
-              <p className="text-sm text-gray-600 mb-4">Current Policy: <span className="font-medium">{policy.name}</span></p>
+            <div className="glass-panel p-8">
+              <h2 className="text-xl font-semibold font-display text-white mb-2">Verify Financial Decision</h2>
+              <p className="text-[#9CA3AF] text-sm mb-6">Decision Type: {getDecisionLabel(decisionType)}</p>
+              <p className="text-sm text-gray-400 mb-4">Current Policy: <span className="font-medium">{policy.name}</span></p>
               {policy.status === "draft" && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
                   Warning: This policy is a draft. Publish it to use for verification.
@@ -673,34 +687,34 @@ export default function Home() {
               )}
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Decision Type</label>
-                  <select value={decisionType} onChange={(e) => handleDecisionTypeChange(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Decision Type</label>
+                  <select style={{backgroundColor:"rgba(255,255,255,0.05)", color:"white"}} value={decisionType} onChange={(e) => handleDecisionTypeChange(e.target.value)} className="w-full border border-white/10 rounded-xl px-4 py-2.5">
                     {DECISION_TYPES.map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
+                      <option style={{color:"black"}} key={type.value} value={type.value}>{type.label}</option>
                     ))}
                   </select>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     {decisionType === "compliance" ? "Entity Name" : "Entity / Customer / Vendor"}
                   </label>
-                  <input type="text" value={entityName} onChange={e => setEntityName(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                  <input type="text" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={entityName} onChange={e => setEntityName(e.target.value)} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                 </div>
                 
                 {showAmountField && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{showAmountLabel}</label>
-                    <input type="number" value={amount} onChange={e => setAmount(parseFloat(e.target.value) || 0)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                    <label className="block text-sm font-medium text-gray-300 mb-1">{showAmountLabel}</label>
+                    <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={amount} onChange={e => setAmount(parseFloat(e.target.value) || 0)} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Agent ID (optional)</label>
-                  <input type="text" value={agentId} onChange={e => setAgentId(e.target.value)} className="w-full border border-gray-300 rounded-xl px-4 py-2.5" />
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Agent ID (optional)</label>
+                  <input type="text" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={agentId} onChange={e => setAgentId(e.target.value)} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                 </div>
                 
-                <button onClick={verifyDecision} disabled={loading} className="w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50">
+                <button onClick={verifyDecision} disabled={loading} className="w-full bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-[#A8321C] disabled:opacity-50">
                   {loading ? "Verifying..." : "Verify Decision"}
                 </button>
               </div>
@@ -708,16 +722,16 @@ export default function Home() {
             {lastVIC && (
               <div className={`rounded-2xl border-2 p-8 ${lastVIC.approved ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"}`}>
                 <div className="text-center border-b pb-4 mb-4">
-                  <div className="inline-block bg-white px-4 py-1 rounded-full text-xs font-mono">VERIFIABLE INTENT CERTIFICATE</div>
-                  <div className={`text-2xl font-bold mt-3 ${lastVIC.approved ? "text-green-600" : "text-red-600"}`}>{lastVIC.approved ? "APPROVED" : "BLOCKED"}</div>
+                  <div className="inline-block bg-transparent px-4 py-1 rounded-full text-xs font-mono">VERIFIABLE INTENT CERTIFICATE</div>
+                  <div className={`text-2xl font-bold font-display mt-3 ${lastVIC.approved ? "text-green-600" : "text-red-600"}`}>{lastVIC.approved ? "APPROVED" : "BLOCKED"}</div>
                   <div className="text-xs text-gray-400 mt-1">{getDecisionLabel(lastVIC.decision_type)}</div>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between py-2 border-b"><span className="text-gray-500">Certificate ID</span><span className="font-mono text-sm">{lastVIC.vic_id}</span></div>
-                  <div className="flex justify-between py-2 border-b"><span className="text-gray-500">Timestamp</span><span>{new Date(lastVIC.timestamp).toLocaleString()}</span></div>
-                  <div className="flex justify-between py-2 border-b"><span className="text-gray-500">Entity</span><span>{lastVIC.vendor}</span></div>
-                  {lastVIC.amount > 0 && <div className="flex justify-between py-2 border-b"><span className="text-gray-500">Amount</span><span>${lastVIC.amount.toLocaleString()}</span></div>}
-                  <div className="flex justify-between py-2 border-b"><span className="text-gray-500">Policy Applied</span><span>{lastVIC.policy_name}</span></div>
+                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Certificate ID</span><span className="font-mono text-sm">{lastVIC.vic_id}</span></div>
+                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Timestamp</span><span>{new Date(lastVIC.timestamp).toLocaleString()}</span></div>
+                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Entity</span><span>{lastVIC.vendor}</span></div>
+                  {lastVIC.amount > 0 && <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Amount</span><span>${lastVIC.amount.toLocaleString()}</span></div>}
+                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Policy Applied</span><span>{lastVIC.policy_name}</span></div>
                 </div>
                 {lastVIC.reasons?.length > 0 && (
                   <div className="bg-red-100 rounded-xl p-4 mt-4">
@@ -739,10 +753,10 @@ export default function Home() {
 
         {activeTab === "simulate" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+            <div className="glass-panel p-8 text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">AI</div>
-              <h2 className="text-xl font-semibold mb-2">AI Simulator</h2>
-              <p className="text-gray-500 text-sm mb-6">Current Policy: <span className="font-medium">{policy.name}</span></p>
+              <h2 className="text-xl font-semibold font-display mb-2">AI Simulator</h2>
+              <p className="text-[#9CA3AF] text-sm mb-6">Current Policy: <span className="font-medium">{policy.name}</span></p>
               {policy.status === "draft" && (
                 <p className="text-xs text-yellow-600 mb-4">Warning: Draft policy may not reflect intended rules.</p>
               )}
@@ -753,17 +767,17 @@ export default function Home() {
             </div>
 
             {simulationResults.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                  <h3 className="font-semibold text-gray-800">Simulation Results (Saved to Queue)</h3>
-                  <Link href="/history" className="text-sm text-blue-600 hover:text-blue-800">View Full Queue</Link>
+              <div className="glass-panel overflow-hidden">
+                <div className="px-6 py-4 bg-transparent border-b border-white/10 flex justify-between items-center">
+                  <h3 className="font-semibold text-white">Simulation Results (Saved to Queue)</h3>
+                  <Link href="/history" className="text-sm text-primary hover:text-[#A8321C]">View Full Queue</Link>
                 </div>
                 <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
                   {simulationResults.map((result, idx) => (
                     <div key={idx} className={`p-4 flex justify-between items-center ${result.approved ? "hover:bg-green-50" : "hover:bg-red-50"}`}>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-800">{result.vendor}</div>
-                        <div className="text-sm text-gray-500">${result.amount?.toLocaleString()} - {getDecisionLabel(result.decision_type)}</div>
+                        <div className="font-medium text-white">{result.vendor}</div>
+                        <div className="text-sm text-[#9CA3AF]">${result.amount?.toLocaleString()} - {getDecisionLabel(result.decision_type)}</div>
                         <div className="text-xs text-gray-400 font-mono">{result.vic_id?.slice(0, 20)}...</div>
                       </div>
                       <div className="text-right">
@@ -780,9 +794,9 @@ export default function Home() {
         )}
 
         {activeTab === "audit" && (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-            <h2 className="text-xl font-semibold mb-2">Audit Log</h2>
-            <p className="text-gray-500 text-sm mb-6">Complete history of all AI financial decisions</p>
+          <div className="glass-panel p-8">
+            <h2 className="text-xl font-semibold font-display mb-2">Audit Log</h2>
+            <p className="text-[#9CA3AF] text-sm mb-6">Complete history of all AI financial decisions</p>
             {history.length === 0 ? (
               <div className="text-center py-12 text-gray-400">No decisions yet. Run the AI Simulator or verify a decision.</div>
             ) : (
@@ -797,7 +811,7 @@ export default function Home() {
                           <span className="text-xs text-gray-400">{getDecisionLabel(v.decision_type)}</span>
                         </div>
                         <p className="font-medium">{v.vendor}</p>
-                        <p className="text-sm text-gray-500">${v.amount?.toLocaleString()}</p>
+                        <p className="text-sm text-[#9CA3AF]">${v.amount?.toLocaleString()}</p>
                       </div>
                     </div>
                     {v.reasons?.length > 0 && <div className="text-xs text-red-500 mt-2">{v.reasons.slice(0, 2).join("; ")}</div>}
