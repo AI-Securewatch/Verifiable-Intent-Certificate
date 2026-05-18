@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -108,10 +108,10 @@ const POLICY_TEMPLATES_BY_TYPE = {
 };
 
 const getDefaultPolicies = () => {
-  const defaultPolicies = {};
+  const defaultPolicies: Record<string, any> = {};
   Object.keys(POLICY_TEMPLATES_BY_TYPE).forEach(type => {
     const id = `policy-${type}-default`;
-    defaultPolicies[type] = [{ id, ...POLICY_TEMPLATES_BY_TYPE[type] }];
+    defaultPolicies[type] = [{ id, ...(POLICY_TEMPLATES_BY_TYPE as any)[type] }];
   });
   return defaultPolicies;
 };
@@ -121,15 +121,15 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("verify");
   const [decisionType, setDecisionType] = useState("payment");
   const [policies, setPolicies] = useState(getDefaultPolicies());
-  const [currentPolicyId, setCurrentPolicyId] = useState(null);
+  const [currentPolicyId, setCurrentPolicyId] = useState<string | null>(null);
   const [policy, setPolicy] = useState({ ...POLICY_TEMPLATES_BY_TYPE.payment });
   const [entityName, setEntityName] = useState("");
   const [amount, setAmount] = useState(0);
   const [agentId, setAgentId] = useState("");
-  const [lastVIC, setLastVIC] = useState(null);
-  const [history, setHistory] = useState([]);
+  const [lastVIC, setLastVIC] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [simulationResults, setSimulationResults] = useState([]);
+  const [simulationResults, setSimulationResults] = useState<any[]>([]);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [showRuleSelector, setShowRuleSelector] = useState(false);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -737,7 +737,7 @@ export default function Home() {
                   <div className="bg-red-100 rounded-xl p-4 mt-4">
                     <div className="font-semibold text-red-700 text-sm mb-1">Block Reasons</div>
                     <ul className="list-disc list-inside text-red-600 text-sm">
-                      {lastVIC.reasons.map((r,i) => <li key={i}>{r}</li>)}
+                      {lastVIC.reasons.map((r: any, i: number) => <li key={i}>{r}</li>)}
                     </ul>
                   </div>
                 )}

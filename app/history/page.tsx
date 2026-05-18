@@ -1,19 +1,19 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function PaymentHistory() {
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
-  const [selectedVIC, setSelectedVIC] = useState(null);
+  const [selectedVIC, setSelectedVIC] = useState<any>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("payreality_history");
     if (saved) setHistory(JSON.parse(saved));
   }, []);
 
-  const exportVIC = (vic) => {
+  const exportVIC = (vic: any) => {
     const blob = new Blob([JSON.stringify(vic, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -23,14 +23,14 @@ export default function PaymentHistory() {
     URL.revokeObjectURL(url);
   };
 
-  const filteredHistory = history.filter(v => {
+  const filteredHistory = history.filter((v: any) => {
     if (filter === "all") return true;
     if (filter === "approved") return v.approved === true;
     if (filter === "blocked") return v.approved === false;
     return true;
   });
 
-  const formatTime = (timestamp) => {
+  const formatTime = (timestamp: any) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
@@ -99,12 +99,12 @@ export default function PaymentHistory() {
               <tbody>
                 {filteredHistory.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-16 text-gray-400">
+                    <td colSpan={7} className="text-center py-16 text-gray-400">
                       No payments yet
                     </td>
                   </tr>
                 ) : (
-                  filteredHistory.map((v, i) => (
+                  filteredHistory.map((v: any, i: number) => (
                     <tr key={i} className="border-b border-gray-100 hover:bg-transparent transition">
                       <td className="px-6 py-3 text-sm text-gray-400 font-mono">
                         {formatTime(v.timestamp)}
@@ -200,7 +200,7 @@ export default function PaymentHistory() {
                   <div className="bg-red-50 rounded-xl p-4 border border-red-200">
                     <div className="font-semibold text-red-700 text-sm mb-2">Block Reasons</div>
                     <ul className="list-disc list-inside text-red-600 text-sm space-y-1">
-                      {selectedVIC.reasons.map((r, idx) => <li key={idx}>{r}</li>)}
+                      {selectedVIC.reasons.map((r: any, idx: number) => <li key={idx}>{r}</li>)}
                     </ul>
                   </div>
                 )}
