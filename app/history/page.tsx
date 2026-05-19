@@ -104,7 +104,7 @@ export default function PaymentHistory() {
                     </td>
                   </tr>
                 ) : (
-                  filteredHistory.map((v: any, i: number) => (
+                  filteredHistory.map((v, i) => (
                     <tr key={i} className="border-b border-gray-100 hover:bg-transparent transition">
                       <td className="px-6 py-3 text-sm text-gray-400 font-mono">
                         {formatTime(v.timestamp)}

@@ -35,7 +35,7 @@ const AVAILABLE_RULES = [
   { id: "approved_bank_accounts", name: "Approved Bank Accounts", category: "Payment-Specific", applicableTo: ["payment", "procurement", "treasury"] },
 ];
 
-const RULES_BY_TYPE = {
+const RULES_BY_TYPE: Record<string, string[]> = {
   payment: ["maxAmount", "approvedEntities", "blockWeekends", "businessHoursOnly", "firstTimeHold", "mfaThreshold", "softBlockPercent", "daily_limit", "weekly_limit", "monthly_limit", "per_entity_daily_limit", "blocked_entities", "entity_velocity", "holiday_restriction", "country_allowlist", "country_denylist", "approved_bank_accounts"],
   fraud_detection: ["maxAmount", "approvedEntities", "firstTimeHold", "daily_limit", "weekly_limit", "monthly_limit", "blocked_entities", "country_allowlist", "country_denylist", "risk_score_threshold", "sanctions_check"],
   credit_scoring: ["maxAmount", "firstTimeHold", "mfaThreshold", "daily_limit", "weekly_limit", "monthly_limit", "blocked_entities", "country_allowlist", "country_denylist", "risk_score_threshold", "min_credit_score", "debt_to_income_ratio"],
@@ -45,7 +45,7 @@ const RULES_BY_TYPE = {
   compliance: ["approvedEntities", "firstTimeHold", "blocked_entities", "country_allowlist", "country_denylist", "sanctions_check", "watchlist_screening"],
 };
 
-const POLICY_TEMPLATES_BY_TYPE = {
+const POLICY_TEMPLATES_BY_TYPE: Record<string, any> = {
   payment: {
     name: "Standard Payment Policy",
     status: "active",
@@ -108,8 +108,8 @@ const POLICY_TEMPLATES_BY_TYPE = {
 };
 
 const getDefaultPolicies = () => {
-  const defaultPolicies: Record<string, any> = {};
-  Object.keys(POLICY_TEMPLATES_BY_TYPE).forEach(type => {
+  const defaultPolicies: Record<string, any[]> = {};
+  Object.keys(POLICY_TEMPLATES_BY_TYPE).forEach((type: any) => {
     const id = `policy-${type}-default`;
     defaultPolicies[type] = [{ id, ...(POLICY_TEMPLATES_BY_TYPE as any)[type] }];
   });
@@ -121,8 +121,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("verify");
   const [decisionType, setDecisionType] = useState("payment");
   const [policies, setPolicies] = useState(getDefaultPolicies());
-  const [currentPolicyId, setCurrentPolicyId] = useState<string | null>(null);
-  const [policy, setPolicy] = useState({ ...POLICY_TEMPLATES_BY_TYPE.payment });
+  const [currentPolicyId, setCurrentPolicyId] = useState<any>(null);
+  const [policy, setPolicy] = useState<any>({ ...POLICY_TEMPLATES_BY_TYPE.payment });
   const [entityName, setEntityName] = useState("");
   const [amount, setAmount] = useState(0);
   const [agentId, setAgentId] = useState("");
@@ -176,7 +176,7 @@ export default function Home() {
     }
   }, [decisionType, policies, isInitialized]);
 
-  const savePolicyAs = (status) => {
+  const savePolicyAs = (status: any) => {
     if (!policy.name || policy.name.trim() === "") {
       alert("Please enter a policy name");
       return;
@@ -212,7 +212,7 @@ export default function Home() {
     }
   };
 
-  const loadExistingPolicy = (policyToLoad) => {
+  const loadExistingPolicy = (policyToLoad: any) => {
     setPolicy(policyToLoad);
     setCurrentPolicyId(policyToLoad.id);
     setShowTemplateSelector(false);
@@ -221,7 +221,7 @@ export default function Home() {
   };
 
   const createNewPolicy = () => {
-    const basePolicy = { name: "", status: "draft", approvedEntities: [] };
+    const basePolicy: any = { name: "", status: "draft", approvedEntities: [] };
     if (RULES_BY_TYPE[decisionType].includes("maxAmount")) basePolicy.maxAmount = 50000;
     if (RULES_BY_TYPE[decisionType].includes("blockWeekends")) basePolicy.blockWeekends = false;
     if (RULES_BY_TYPE[decisionType].includes("businessHoursOnly")) basePolicy.businessHoursOnly = false;
@@ -234,7 +234,7 @@ export default function Home() {
     setShowRuleSelector(false);
   };
 
-  const addRuleToPolicy = (ruleId) => {
+  const addRuleToPolicy = (ruleId: any) => {
     const rule = AVAILABLE_RULES.find(r => r.id === ruleId);
     if (!rule) return;
     
@@ -263,13 +263,13 @@ export default function Home() {
     setShowRuleSelector(false);
   };
 
-  const removeRuleFromPolicy = (ruleId) => {
+  const removeRuleFromPolicy = (ruleId: any) => {
     const newPolicy = { ...policy };
     delete newPolicy[ruleId];
     setPolicy(newPolicy);
   };
 
-  const deletePolicy = (policyId) => {
+  const deletePolicy = (policyId: any) => {
     const typePolicies = policies[decisionType] || [];
     if (typePolicies.length <= 1) {
       alert("You must keep at least one policy for this decision type");
@@ -288,7 +288,7 @@ export default function Home() {
     alert("Policy deleted");
   };
 
-  const handleDecisionTypeChange = (newType) => {
+  const handleDecisionTypeChange = (newType: any) => {
     setDecisionType(newType);
     const typePolicies = policies[newType] || [];
     if (typePolicies.length > 0) {
@@ -415,12 +415,12 @@ export default function Home() {
     alert(`Simulation complete: ${approvedCount} approved, ${blockedCount} blocked. All saved to audit log.`);
   };
 
-  const getDecisionLabel = (type) => {
+  const getDecisionLabel = (type: any) => {
     const found = DECISION_TYPES.find(d => d.value === type);
     return found ? found.label : type;
   };
 
-  const TabButton = ({ id, label }) => (
+  const TabButton = ({ id, label }: any) => (
     <button onClick={() => setActiveTab(id)} className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${activeTab === id ? "bg-primary text-white shadow-md" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}>
       {label}
     </button>
