@@ -1,0 +1,12 @@
+
+> payreality-demo@0.1.0 test
+> jest
+
+PASS tests/unit/branding.test.tsx
+PASS tests/unit/page.test.tsx
+
+Test Suites: 2 passed, 2 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        1.978 s
+Ran all test suites.

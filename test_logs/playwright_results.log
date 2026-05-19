@@ -1,0 +1,39 @@
+
+> payreality-demo@0.1.0 test:e2e
+> playwright test
+
+
+Running 2 tests using 2 workers
+
+[1A[2K[1/2] [chromium] › tests/e2e/verification.spec.ts:4:7 › PayReality Verification E2E › should load the page, navigate tabs and trigger simulation
+[1A[2K[2/2] [chromium] › tests/e2e/verification.spec.ts:24:7 › PayReality Verification E2E › should show history queue
+[1A[2K  1) [chromium] › tests/e2e/verification.spec.ts:4:7 › PayReality Verification E2E › should load the page, navigate tabs and trigger simulation 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveTitle[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/AI SecureWatch \| PayReality/[39m
+    Received string:  [31m"PayReality | AI SecureWatch"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveTitle" with timeout 5000ms[22m
+    [2m    14 × unexpected value "PayReality | AI SecureWatch"[22m
+
+
+       6 |
+       7 |     // Check title
+    >  8 |     await expect(page).toHaveTitle(/AI SecureWatch \| PayReality/);
+         |                        ^
+       9 |
+      10 |     // Verify main heading
+      11 |     await expect(page.locator('span', { hasText: 'PayReality' }).first()).toBeVisible();
+        at /home/tmo/dev/AI SecureWatch/Verifiable-Intent-Certificate/tests/e2e/verification.spec.ts:8:24
+
+    Error Context: test-results/verification-PayReality-Ve-e66fe-tabs-and-trigger-simulation-chromium/error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests/e2e/verification.spec.ts:4:7 › PayReality Verification E2E › should load the page, navigate tabs and trigger simulation 
+  1 passed (6.9s)
+
+  Serving HTML report at http://localhost:44659. Press Ctrl+C to quit.

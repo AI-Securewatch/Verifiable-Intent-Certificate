@@ -16,7 +16,7 @@ describe('Home Page Verification Flow', () => {
   it('renders correctly and loads default policies', async () => {
     render(<Home />);
     
-    const title = await screen.findByText('Verifiable Intent Certificates for AI Financial Decisions');
+    const title = await screen.findByText('Provisional Patent PPN00002476');
     expect(title).toBeTruthy();
     
     // Check if the default "Payment" decision type is active
@@ -30,16 +30,11 @@ describe('Home Page Verification Flow', () => {
     const verifyDecisionElements = screen.getAllByText('Verify Decision');
     fireEvent.click(verifyDecisionElements[0]);
     
-    // Mock window alert
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    
     const verifyButton = verifyDecisionElements[verifyDecisionElements.length - 1];
     fireEvent.click(verifyButton!);
     
-    await waitFor(() => {
-      expect(alertMock).toHaveBeenCalledWith('Please enter entity name');
-    });
-    
-    alertMock.mockRestore();
+    // Check for toast error message
+    const toast = await screen.findByText('Please enter entity name');
+    expect(toast).toBeTruthy();
   });
 });

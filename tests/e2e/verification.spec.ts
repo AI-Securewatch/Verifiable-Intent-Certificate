@@ -8,7 +8,7 @@ test.describe('PayReality Verification E2E', () => {
     await expect(page).toHaveTitle(/AI SecureWatch \| PayReality/);
 
     // Verify main heading
-    await expect(page.locator('h1', { hasText: 'PayReality' })).toBeVisible();
+    await expect(page.locator('span', { hasText: 'PayReality' }).first()).toBeVisible();
 
     // Navigate to AI Simulator tab
     await page.click('text=AI Simulator');
@@ -29,6 +29,6 @@ test.describe('PayReality Verification E2E', () => {
     
     // Navigate back to dashboard
     await page.click('text=← Back to Dashboard');
-    await expect(page.locator('h1', { hasText: 'PayReality' })).toBeVisible();
+    await expect(page.locator('span', { hasText: 'PayReality' }).first()).toBeVisible();
   });
 });

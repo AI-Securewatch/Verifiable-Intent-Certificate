@@ -44,11 +44,23 @@ export default function PaymentHistory() {
         {/* Header */}
         <div className="mb-6">
           <Link href="/" className="text-sm text-primary hover:text-[#A8321C]">← Back to Dashboard</Link>
-          <h1 className="text-2xl font-semibold text-white mt-4">Live Payment Queue</h1>
-          <div className="flex items-center gap-4 mt-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-[#9CA3AF]">Auto-refresh</span>
-              <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">ON</span>
+          <div className="flex justify-between items-center mt-4">
+            <h1 className="text-2xl font-semibold text-[var(--text-primary)]">Live Payment Queue</h1>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  const isLight = document.documentElement.classList.toggle('light');
+                  localStorage.theme = isLight ? 'light' : 'dark';
+                }}
+                className="p-2.5 glass-panel text-[var(--text-muted)] rounded-lg hover:border-[#D94028] transition shadow-md hover:text-[var(--accent-red)] flex items-center justify-center"
+                title="Toggle Light/Dark Mode"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 4V2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 4 12 4zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6v12z"/></svg>
+              </button>
+              <div className="px-4 py-2 bg-[var(--bg-panel)] border border-[rgba(255,255,255,0.1)] text-[var(--text-primary)] rounded-lg text-sm font-mono hover:bg-[rgba(255,255,255,0.05)] transition flex items-center gap-2">
+                <span className="text-sm text-[#9CA3AF]">Auto-refresh</span>
+                <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">ON</span>
+              </div>
             </div>
           </div>
         </div>
@@ -58,7 +70,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => setFilter("all")}
             className={`px-5 py-2 text-sm font-medium rounded-md transition ${
-              filter === "all" ? "bg-gray-800 text-white" : "bg-transparent text-gray-400 border border-white/10 hover:bg-transparent"
+              filter === "all" ? "bg-gray-800 text-[var(--text-primary)]" : "bg-transparent text-[var(--text-muted)] border border-white/10 hover:bg-transparent"
             }`}
           >
             All ({history.length})
@@ -66,7 +78,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => setFilter("approved")}
             className={`px-5 py-2 text-sm font-medium rounded-md transition ${
-              filter === "approved" ? "bg-green-600 text-white" : "bg-transparent text-gray-400 border border-white/10 hover:bg-transparent"
+              filter === "approved" ? "bg-green-600 text-[var(--text-primary)]" : "bg-transparent text-[var(--text-muted)] border border-white/10 hover:bg-transparent"
             }`}
           >
             Approved ({totalApproved})
@@ -74,7 +86,7 @@ export default function PaymentHistory() {
           <button
             onClick={() => setFilter("blocked")}
             className={`px-5 py-2 text-sm font-medium rounded-md transition ${
-              filter === "blocked" ? "bg-red-600 text-white" : "bg-transparent text-gray-400 border border-white/10 hover:bg-transparent"
+              filter === "blocked" ? "bg-red-600 text-[var(--text-primary)]" : "bg-transparent text-[var(--text-muted)] border border-white/10 hover:bg-transparent"
             }`}
           >
             Blocked ({totalBlocked})
@@ -99,23 +111,23 @@ export default function PaymentHistory() {
               <tbody>
                 {filteredHistory.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-16 text-gray-400">
+                    <td colSpan={7} className="text-center py-16 text-[var(--text-muted)]">
                       No payments yet
                     </td>
                   </tr>
                 ) : (
                   filteredHistory.map((v, i) => (
                     <tr key={i} className="border-b border-gray-100 hover:bg-transparent transition">
-                      <td className="px-6 py-3 text-sm text-gray-400 font-mono">
+                      <td className="px-6 py-3 text-sm text-[var(--text-muted)] font-mono">
                         {formatTime(v.timestamp)}
                       </td>
                       <td className="px-6 py-3 text-sm text-[#9CA3AF]">
                         {v.agent_id || "AI Agent"}
                       </td>
-                      <td className="px-6 py-3 text-sm font-medium text-white">
+                      <td className="px-6 py-3 text-sm font-medium text-[var(--text-primary)]">
                         {v.vendor}
                       </td>
-                      <td className="px-6 py-3 text-sm text-right font-medium text-white">
+                      <td className="px-6 py-3 text-sm text-right font-medium text-[var(--text-primary)]">
                         ${v.amount?.toLocaleString()}
                       </td>
                       <td className="px-6 py-3 text-sm text-[#9CA3AF]">
@@ -151,81 +163,60 @@ export default function PaymentHistory() {
               {/* Modal Header */}
               <div className="sticky top-0 bg-transparent border-b border-white/10 px-6 py-4 flex justify-between items-center rounded-t-2xl">
                 <div>
-                  <h3 className="text-lg font-semibold font-display text-white">Verifiable Intent Certificate</h3>
-                  <p className="text-xs text-gray-400 mt-1">Cryptographically signed • Ed25519</p>
+                  <h3 className="text-lg font-semibold font-display text-[var(--text-primary)]">Verifiable Intent Certificate</h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">Cryptographically signed • Ed25519</p>
                 </div>
-                <button onClick={() => setSelectedVIC(null)} className="text-gray-400 hover:text-gray-400 text-2xl leading-none">×</button>
+                <button onClick={() => setSelectedVIC(null)} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-2xl leading-none">×</button>
               </div>
               
               {/* Certificate Content */}
-              <div className="p-6 space-y-5">
-                {/* Status Banner */}
-                <div className={`rounded-xl p-4 text-center ${selectedVIC.approved ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
-                  <div className={`text-2xl font-bold font-display ${selectedVIC.approved ? "text-green-700" : "text-red-700"}`}>
-                    {selectedVIC.approved ? "✓ PAYMENT APPROVED" : "✗ PAYMENT BLOCKED"}
-                  </div>
-                  <div className="text-xs text-[#9CA3AF] mt-1">Verifiable Intent Certificate issued at settlement time</div>
-                </div>
-                
-                {/* Certificate Details Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-transparent rounded-lg p-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">Certificate ID</div>
-                    <div className="font-mono text-sm text-white mt-1 break-all">{selectedVIC.vic_id}</div>
-                  </div>
-                  <div className="bg-transparent rounded-lg p-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">Timestamp</div>
-                    <div className="text-sm text-white mt-1">{new Date(selectedVIC.timestamp).toLocaleString()}</div>
-                  </div>
-                  <div className="bg-transparent rounded-lg p-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">Vendor</div>
-                    <div className="text-sm font-medium text-white mt-1">{selectedVIC.vendor}</div>
-                  </div>
-                  <div className="bg-transparent rounded-lg p-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">Amount</div>
-                    <div className="text-lg font-bold text-white mt-1">${selectedVIC.amount?.toLocaleString()}</div>
-                  </div>
-                  <div className="bg-transparent rounded-lg p-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">Agent</div>
-                    <div className="text-sm text-white mt-1">{selectedVIC.agent_id || "AI Agent"}</div>
-                  </div>
-                  <div className="bg-transparent rounded-lg p-3">
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">Policy Applied</div>
-                    <div className="text-sm text-white mt-1">{selectedVIC.policy_name || "Default Policy"}</div>
-                  </div>
-                </div>
-                
-                {/* Block Reasons (if blocked) */}
-                {selectedVIC.reasons?.length > 0 && (
-                  <div className="bg-red-50 rounded-xl p-4 border border-red-200">
-                    <div className="font-semibold text-red-700 text-sm mb-2">Block Reasons</div>
-                    <ul className="list-disc list-inside text-red-600 text-sm space-y-1">
-                      {selectedVIC.reasons.map((r: any, idx: number) => <li key={idx}>{r}</li>)}
-                    </ul>
-                  </div>
-                )}
-                
-                {/* Signature Section */}
-                <div className="bg-transparent rounded-xl p-4">
-                  <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">Ed25519 Signature</div>
-                  <div className="font-mono text-xs text-gray-400 break-all bg-transparent p-3 rounded-lg border border-white/10">
-                    {selectedVIC.signature}
-                  </div>
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-xs text-[#9CA3AF]">Signature verified • Public key fingerprint: {selectedVIC.public_key_fingerprint}</span>
+              <div className="p-6">
+                <div className={`system-toast w-full max-w-full ${selectedVIC.approved ? 'status-success' : 'status-error'}`}>
+                  <svg className="toast-icon" viewBox="0 0 24 24">
+                    {selectedVIC.approved ? <use href="#icon-database"/> : <use href="#icon-shield-lock"/>}
+                  </svg>
+                  <div className="toast-content w-full">
+                    <div className="toast-title text-sm">{selectedVIC.approved ? "VERIFIABLE_INTENT_CERTIFICATE // APPROVED" : "EXCEPTION_THROWN // BLOCKED"}</div>
+                    <div className="toast-message mt-6">
+                      <div className="grid grid-cols-2 gap-6 font-mono text-xs">
+                        <div><span className="text-[var(--text-muted)]">Certificate ID:</span><br/>{selectedVIC.vic_id}</div>
+                        <div><span className="text-[var(--text-muted)]">Timestamp:</span><br/>{new Date(selectedVIC.timestamp).toLocaleString()}</div>
+                        <div><span className="text-[var(--text-muted)]">Vendor:</span><br/>{selectedVIC.vendor}</div>
+                        <div><span className="text-[var(--text-muted)]">Amount:</span><br/>${selectedVIC.amount?.toLocaleString()}</div>
+                        <div><span className="text-[var(--text-muted)]">Agent:</span><br/>{selectedVIC.agent_id || "AI Agent"}</div>
+                        <div><span className="text-[var(--text-muted)]">Policy:</span><br/>{selectedVIC.policy_name || "Default Policy"}</div>
+                      </div>
+                      
+                      {selectedVIC.reasons?.length > 0 && (
+                        <div className="mt-6 p-4 border border-[var(--accent-red)] bg-[#D94028]/10 text-[var(--accent-red)] font-mono text-xs">
+                          &gt; BLOCK_REASONS:<br/>
+                          <div className="mt-2 space-y-1">
+                            {selectedVIC.reasons.map((r: any, idx: number) => <div key={idx}>- {r}</div>)}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="mt-6 pt-4 border-t border-[rgba(255,255,255,0.1)] font-mono text-[10px] break-all">
+                        <div className="text-[var(--text-muted)] mb-1">ED25519_SIGNATURE:</div>
+                        <div className="text-[var(--text-body)]">{selectedVIC.signature}</div>
+                        <div className="mt-3 text-[var(--accent-green)] flex items-center gap-2">
+                          <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><use href="#icon-database"/></svg>
+                          VERIFIED // PUBLIC_KEY_FP: {selectedVIC.public_key_fingerprint}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               
               {/* Modal Footer */}
-              <div className="border-t border-white/10 p-6 bg-transparent rounded-b-2xl">
+              <div className="border-t border-white/10 p-6 glass-panel rounded-b-2xl mt-4">
                 <div className="flex gap-3">
-                  <button onClick={() => exportVIC(selectedVIC)} className="flex-1 bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-[#A8321C] transition">
-                    Export Full Certificate (JSON)
+                  <button onClick={() => exportVIC(selectedVIC)} className="flex-1 bg-primary text-[var(--text-primary)] py-2.5 rounded font-mono text-xs font-bold tracking-[0.1em] hover:bg-[#A8321C] transition shadow-[0_4px_15px_rgba(217,64,40,0.3)]">
+                    &gt; EXPORT_FULL_CERTIFICATE
                   </button>
-                  <button onClick={() => setSelectedVIC(null)} className="px-6 bg-gray-200 text-gray-300 py-2.5 rounded-xl font-medium hover:bg-gray-300 transition">
-                    Close
+                  <button onClick={() => setSelectedVIC(null)} className="px-6 bg-white/5 border border-white/10 text-[var(--text-primary)] py-2.5 rounded font-mono text-xs font-bold tracking-[0.1em] hover:bg-white/10 transition">
+                    // CLOSE
                   </button>
                 </div>
               </div>

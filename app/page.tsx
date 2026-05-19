@@ -117,6 +117,13 @@ const getDefaultPolicies = () => {
 };
 
 export default function Home() {
+
+  const [toasts, setToasts] = useState<Array<{id: string, type: 'success' | 'error' | 'info', title: string, message: string}>>([]);
+  const addToast = (type: 'success' | 'error' | 'info', title: string, message: string) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts(prev => [...prev, { id, type, title, message }]);
+    setTimeout(() => { setToasts(prev => prev.filter(t => t.id !== id)); }, 5000);
+  };
   const [publicKeyFp, setPublicKeyFp] = useState("");
   const [activeTab, setActiveTab] = useState("verify");
   const [decisionType, setDecisionType] = useState("payment");
@@ -178,7 +185,7 @@ export default function Home() {
 
   const savePolicyAs = (status: any) => {
     if (!policy.name || policy.name.trim() === "") {
-      alert("Please enter a policy name");
+      addToast("error", "SYSTEM_ALERT", "Please enter a policy name");
       return;
     }
     
@@ -197,7 +204,7 @@ export default function Home() {
     setPolicies(updatedPolicies);
     localStorage.setItem("payreality_policies", JSON.stringify(updatedPolicies));
     localStorage.setItem(`payreality_current_policy_${decisionType}`, currentPolicyId || updatedTypePolicies[updatedTypePolicies.length-1].id);
-    alert(`Policy "${policy.name}" ${status === "active" ? "published" : "saved as draft"}`);
+    addToast("info", "SYSTEM_NOTIFICATION", `Policy "${policy.name}" ${status === "active" ? "published" : "saved as draft"}`);
     setShowTemplateSelector(false);
     setIsCreatingNew(false);
     setShowRuleSelector(false);
@@ -272,7 +279,7 @@ export default function Home() {
   const deletePolicy = (policyId: any) => {
     const typePolicies = policies[decisionType] || [];
     if (typePolicies.length <= 1) {
-      alert("You must keep at least one policy for this decision type");
+      addToast("error", "SYSTEM_ALERT", "You must keep at least one policy for this decision type");
       return;
     }
     const updatedTypePolicies = typePolicies.filter(p => p.id !== policyId);
@@ -285,7 +292,7 @@ export default function Home() {
       setCurrentPolicyId(firstPolicy.id);
       localStorage.setItem(`payreality_current_policy_${decisionType}`, firstPolicy.id);
     }
-    alert("Policy deleted");
+    addToast("error", "SYSTEM_ALERT", "Policy deleted");
   };
 
   const handleDecisionTypeChange = (newType: any) => {
@@ -308,13 +315,13 @@ export default function Home() {
 
   const verifyDecision = async () => {
     if (!entityName) {
-      alert("Please enter entity name");
+      addToast("error", "SYSTEM_ALERT", "Please enter entity name");
       return;
     }
     
     const activeRules = RULES_BY_TYPE[decisionType];
     if (activeRules.includes("maxAmount") && amount <= 0) {
-      alert("Please enter a valid amount");
+      addToast("error", "SYSTEM_ALERT", "Please enter a valid amount");
       return;
     }
     
@@ -345,10 +352,10 @@ export default function Home() {
       const newHistory = [res.data, ...history].slice(0, 200);
       setHistory(newHistory);
       localStorage.setItem("payreality_history", JSON.stringify(newHistory));
-      alert(`${decisionType.replace('_', ' ').toUpperCase()} ${res.data.approved ? "APPROVED" : "BLOCKED"}`);
+      addToast("info", "SYSTEM_NOTIFICATION", `${decisionType.replace('_', ' ').toUpperCase()} ${res.data.approved ? "APPROVED" : "BLOCKED"}`);
     } catch (err) { 
       console.error("Verification error:", err);
-      alert("Error verifying decision");
+      addToast("error", "SYSTEM_ALERT", "Error verifying decision");
     }
     setLoading(false);
   };
@@ -412,7 +419,7 @@ export default function Home() {
     setLoading(false);
     const approvedCount = results.filter(r => r.approved).length;
     const blockedCount = results.filter(r => !r.approved).length;
-    alert(`Simulation complete: ${approvedCount} approved, ${blockedCount} blocked. All saved to audit log.`);
+    addToast("info", "SYSTEM_NOTIFICATION", `Simulation complete: ${approvedCount} approved, ${blockedCount} blocked. All saved to audit log.`);
   };
 
   const getDecisionLabel = (type: any) => {
@@ -421,7 +428,7 @@ export default function Home() {
   };
 
   const TabButton = ({ id, label }: any) => (
-    <button onClick={() => setActiveTab(id)} className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${activeTab === id ? "bg-primary text-white shadow-md" : "bg-white/5 text-gray-300 hover:bg-white/10"}`}>
+    <button onClick={() => setActiveTab(id)} className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${activeTab === id ? "bg-[var(--accent-red)] text-[var(--text-primary)] shadow-md" : "bg-[rgba(255,255,255,0.05)] text-[var(--text-muted)] hover:bg-[rgba(255,255,255,0.1)]"}`}>
       {label}
     </button>
   );
@@ -442,33 +449,34 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-transparent">
 
-      <div id="global-brand-preloader" className="fixed inset-0 bg-[#0a0e17] z-[999999] flex flex-col items-center justify-center transition-opacity duration-600" style={{opacity: isInitialized ? 0 : 1, pointerEvents: isInitialized ? 'none' : 'auto'}}>
-        <div className="relative w-[140px] h-[140px] flex items-center justify-center overflow-hidden rounded bg-[#111623] border border-white/5">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#D94028] shadow-[0_0_20px_5px_rgba(217,64,40,0.95)] animate-[preloaderScanSweep_2.2s_linear_infinite_alternate] z-10"></div>
-          <svg className="w-[90px] h-[90px] fill-white animate-[preloaderEyePulse_3s_ease-in-out_infinite_alternate]" viewBox="0 0 1600 1300">
-             <path d="M854.35.01l42.66,3.02c358.52,31.7,669.05,301,742.73,663.38l3.25,19.26v34.13c-1.34,5.98-1.95,12.11-3.42,18.08-24.61,100.06-146.48,139.88-227.39,81.12-58.67-42.6-54.42-93.91-73.98-157.19-71.22-230.41-273.72-366.45-506.93-369.63-246.47-3.36-462.98,142.48-531.6,388.47-14.54,52.14-13.75,105.13-69.79,130.36-71.29,32.1-198.85,2.84-224.49-81.16-2.23-7.28-2.62-15.28-5.38-22.1v-20.08c1.41-1.2,1.55-2.95,1.84-4.64C66.47,300.04,412.69,11.66,789.21,1.05l2.37-1.05h62.78ZM796.28,34.45C457.94,44.42,148.04,277.62,52.48,611.4c-8.34,29.13-23.74,79.18-15.14,107.86,18.65,62.22,115.25,80,168.64,64.3,48.54-14.26,47.36-58.34,58.16-100.1,69.34-268.15,300.6-428.95,568.11-425.39,252.48,3.36,469.69,154.74,541.49,405.53,12.95,45.22,11.81,87.31,49.02,120.49,64.74,57.73,174.66,22.19,186.75-66.93,4.07-29.98-8.63-74.3-17.03-103.76C1497.53,280.27,1184.73,41.29,846.06,34.11l-49.78.33h0Z"/>
-             <path d="M853.37,1250.87h-58.85c-229.12-18.7-387.65-232.7-344.97-464.99,7.41-40.33,29.13-103.11,54.21-135.25,10.02-12.85,25.52-16.45,36.23-2.11,12.27,16.43-3.6,31.09-11.11,44.89-120.9,221.98,23.8,493.64,269.07,513.29,96.86,7.76,204.85-31.49,269.74-106.39,11.97-13.82,29.62-48.12,51.98-31.13,21.71,16.5-3.47,42.6-15.68,56.23-62.97,70.31-156.85,119.55-250.63,125.48Z"/>
-          </svg>
-        </div>
-        <div className="mt-6 font-mono text-[11px] text-[#9CA3AF] text-center tracking-[0.1em]">
-          <span className="text-[#D94028] font-bold">&gt; INITIALIZING_BRAND_CORE</span><br/>
-        </div>
-      </div>
-    
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-3xl font-bold font-display text-white">PayReality</h1>
-            <p className="text-[#9CA3AF] mt-1">Verifiable Intent Certificates for AI Financial Decisions</p>
-            <div className="flex gap-2 mt-2 text-xs text-gray-400 font-mono">
+            <div className="flex flex-col">
+              <span className="font-body font-extrabold text-4xl text-[var(--text-primary)] tracking-tight">PayReality</span>
+              <span className="font-mono text-xs text-primary tracking-[0.2em] mt-1">VERIFIABLE INTENT CERTIFICATE</span>
+            </div>
+            <div className="flex gap-2 mt-2 text-xs text-[var(--text-muted)] font-mono">
               <span>Provisional Patent PPN00002476</span>
               <span>Ed25519 Signatures</span>
               <span>Public Key FP: {publicKeyFp}</span>
             </div>
           </div>
-          <Link href="/history" className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900">
-            Decision Queue
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                const isLight = document.documentElement.classList.toggle('light');
+                localStorage.theme = isLight ? 'light' : 'dark';
+              }}
+              className="p-2.5 glass-panel text-[var(--text-muted)] rounded-lg hover:border-[#D94028] transition shadow-md hover:text-[var(--accent-red)] flex items-center justify-center"
+              title="Toggle Light/Dark Mode"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 4V2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 4 12 4zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6v12z"/></svg>
+            </button>
+            <Link href="/history" className="px-4 py-2 bg-[#111623] border border-white/10 text-[var(--text-primary)] rounded-lg text-sm font-mono hover:bg-white/5 transition">
+              Decision Queue
+            </Link>
+          </div>
         </div>
 
         <div className="flex gap-3 mb-8 border-b border-white/10 pb-4">
@@ -482,7 +490,7 @@ export default function Home() {
           <div className="space-y-6">
             <div className="glass-panel p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold font-display text-white">Decision Type</h2>
+                <h2 className="text-lg font-semibold font-display text-[var(--text-primary)]">Decision Type</h2>
                 <select style={{backgroundColor:"rgba(255,255,255,0.05)", color:"white"}} 
                   value={decisionType} 
                   onChange={(e) => handleDecisionTypeChange(e.target.value)}
@@ -496,17 +504,17 @@ export default function Home() {
               
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-4">
-                  <h2 className="text-lg font-semibold font-display text-white">My Policies</h2>
+                  <h2 className="text-lg font-semibold font-display text-[var(--text-primary)]">My Policies</h2>
                   <button 
                     onClick={() => setShowDrafts(!showDrafts)} 
-                    className={`text-xs px-2 py-1 rounded ${showDrafts ? "bg-blue-100 text-blue-700" : "bg-white/5 text-gray-400"}`}
+                    className={`text-xs px-2 py-1 rounded ${showDrafts ? "bg-blue-100 text-blue-700" : "bg-white/5 text-[var(--text-muted)]"}`}
                   >
                     {showDrafts ? "Hide Drafts" : "Show Drafts"}
                   </button>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setShowTemplateSelector(!showTemplateSelector)} className="px-3 py-1.5 text-sm bg-white/5 rounded-lg hover:bg-white/10">Use Template</button>
-                  <button onClick={createNewPolicy} className="px-3 py-1.5 text-sm bg-primary text-white rounded-lg hover:bg-[#A8321C]">New Policy</button>
+                  <button onClick={createNewPolicy} className="form-action" >New Policy</button>
                 </div>
               </div>
               
@@ -515,7 +523,7 @@ export default function Home() {
                   <button 
                     key={p.id} 
                     onClick={() => loadExistingPolicy(p)} 
-                    className={`px-3 py-1.5 text-sm rounded-lg transition flex items-center gap-2 ${currentPolicyId === p.id ? "bg-[#D94028]/20 text-[#D94028] border border-[#D94028]/50" : "bg-white/5 text-gray-400 hover:bg-white/10"}`}
+                    className={`px-3 py-1.5 text-sm rounded-lg transition flex items-center gap-2 ${currentPolicyId === p.id ? "bg-[#D94028]/20 text-[#D94028] border border-[#D94028]/50" : "bg-white/5 text-[var(--text-muted)] hover:bg-white/10"}`}
                   >
                     {p.name}
                     {p.status === "draft" && <span className="text-xs bg-yellow-200 text-yellow-800 px-1 rounded">Draft</span>}
@@ -543,9 +551,9 @@ export default function Home() {
 
             <div className="glass-panel p-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold font-display text-white mb-0">{isCreatingNew ? "Create New Policy" : "Edit Policy"}</h2>
+                <h2 className="text-xl font-semibold font-display text-[var(--text-primary)] mb-0">{isCreatingNew ? "Create New Policy" : "Edit Policy"}</h2>
                 {rulesToAdd.length > 0 && !showRuleSelector && (
-                  <button onClick={() => setShowRuleSelector(true)} className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700">
+                  <button onClick={() => setShowRuleSelector(true)} className="px-3 py-1.5 text-sm bg-green-600 text-[var(--text-primary)] rounded-lg hover:bg-green-700">
                     + Add Rule
                   </button>
                 )}
@@ -571,26 +579,26 @@ export default function Home() {
                       </button>
                     ))}
                   </div>
-                  <button onClick={() => setShowRuleSelector(false)} className="mt-3 text-xs text-[#9CA3AF] hover:text-gray-300">Cancel</button>
+                  <button onClick={() => setShowRuleSelector(false)} className="mt-3 text-xs text-[#9CA3AF] hover:text-[var(--text-body)]">Cancel</button>
                 </div>
               )}
               
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Policy Name</label>
+                  <label className="form-label">Policy Name</label>
                   <input type="text" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.name} onChange={e => setPolicy({...policy, name: e.target.value})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                 </div>
                 
                 {activeRules.includes("maxAmount") && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Max Amount per Decision</label>
+                    <label className="form-label">Max Amount per Decision</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.maxAmount || 0} onChange={e => setPolicy({...policy, maxAmount: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                   </div>
                 )}
                 
                 {policy.daily_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Daily Total Limit</label>
+                    <label className="form-label">Daily Total Limit</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.daily_limit} onChange={e => setPolicy({...policy, daily_limit: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("daily_limit")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
@@ -598,7 +606,7 @@ export default function Home() {
                 
                 {policy.weekly_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Weekly Total Limit</label>
+                    <label className="form-label">Weekly Total Limit</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.weekly_limit} onChange={e => setPolicy({...policy, weekly_limit: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("weekly_limit")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
@@ -606,7 +614,7 @@ export default function Home() {
                 
                 {policy.monthly_limit !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Monthly Total Limit</label>
+                    <label className="form-label">Monthly Total Limit</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.monthly_limit} onChange={e => setPolicy({...policy, monthly_limit: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("monthly_limit")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
@@ -614,14 +622,14 @@ export default function Home() {
                 
                 {activeRules.includes("mfaThreshold") && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">MFA Threshold</label>
+                    <label className="form-label">MFA Threshold</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.mfaThreshold || 0} onChange={e => setPolicy({...policy, mfaThreshold: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                   </div>
                 )}
                 
                 {policy.risk_score_threshold !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Risk Score Threshold (0-100)</label>
+                    <label className="form-label">Risk Score Threshold (0-100)</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.risk_score_threshold} onChange={e => setPolicy({...policy, risk_score_threshold: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("risk_score_threshold")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
@@ -629,21 +637,21 @@ export default function Home() {
                 
                 {policy.min_credit_score !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Minimum Credit Score</label>
+                    <label className="form-label">Minimum Credit Score</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={policy.min_credit_score} onChange={e => setPolicy({...policy, min_credit_score: parseInt(e.target.value) || 0})} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                     <button onClick={() => removeRuleFromPolicy("min_credit_score")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Approved Entities (one per line)</label>
+                  <label className="form-label">Approved Entities (one per line)</label>
                   <textarea style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={(policy.approvedEntities || []).join('\n')} onChange={e => setPolicy({...policy, approvedEntities: e.target.value.split('\n').filter(v => v.trim())})} rows={4} className="w-full border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm" />
-                  <p className="text-xs text-gray-400 mt-1">Leave empty to allow all entities</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">Leave empty to allow all entities</p>
                 </div>
                 
                 {policy.blocked_entities !== undefined && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Blocked Entities (one per line)</label>
+                    <label className="form-label">Blocked Entities (one per line)</label>
                     <textarea style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={(policy.blocked_entities || []).join('\n')} onChange={e => setPolicy({...policy, blocked_entities: e.target.value.split('\n').filter(v => v.trim())})} rows={3} className="w-full border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm" />
                     <button onClick={() => removeRuleFromPolicy("blocked_entities")} className="text-xs text-red-500 mt-1 hover:text-red-700">Remove rule</button>
                   </div>
@@ -663,11 +671,11 @@ export default function Home() {
               </div>
               
               <div className="flex gap-3 mt-8">
-                <button onClick={() => savePolicyAs("draft")} className="flex-1 bg-gray-200 text-gray-300 py-2.5 rounded-xl font-medium hover:bg-gray-300">
-                  Save as Draft
+                <button onClick={() => savePolicyAs("draft")} className="flex-1 bg-transparent border border-[rgba(255,255,255,0.1)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.05)] py-2.5 rounded font-mono text-xs font-bold tracking-[0.1em] transition">
+                  // SAVE_AS_DRAFT
                 </button>
-                <button onClick={() => savePolicyAs("active")} className="flex-1 bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-[#A8321C]">
-                  Publish
+                <button onClick={() => savePolicyAs("active")} className="form-action flex-1">
+                  &gt; PUBLISH_POLICY
                 </button>
               </div>
             </div>
@@ -677,9 +685,9 @@ export default function Home() {
         {activeTab === "verify" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="glass-panel p-8">
-              <h2 className="text-xl font-semibold font-display text-white mb-2">Verify Financial Decision</h2>
+              <h2 className="text-xl font-semibold font-display text-[var(--text-primary)] mb-2">Verify Financial Decision</h2>
               <p className="text-[#9CA3AF] text-sm mb-6">Decision Type: {getDecisionLabel(decisionType)}</p>
-              <p className="text-sm text-gray-400 mb-4">Current Policy: <span className="font-medium">{policy.name}</span></p>
+              <p className="text-sm text-[var(--text-muted)] mb-4">Current Policy: <span className="font-medium">{policy.name}</span></p>
               {policy.status === "draft" && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
                   Warning: This policy is a draft. Publish it to use for verification.
@@ -687,7 +695,7 @@ export default function Home() {
               )}
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Decision Type</label>
+                  <label className="form-label">Decision Type</label>
                   <select style={{backgroundColor:"rgba(255,255,255,0.05)", color:"white"}} value={decisionType} onChange={(e) => handleDecisionTypeChange(e.target.value)} className="w-full border border-white/10 rounded-xl px-4 py-2.5">
                     {DECISION_TYPES.map(type => (
                       <option style={{color:"black"}} key={type.value} value={type.value}>{type.label}</option>
@@ -696,7 +704,7 @@ export default function Home() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="form-label">
                     {decisionType === "compliance" ? "Entity Name" : "Entity / Customer / Vendor"}
                   </label>
                   <input type="text" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={entityName} onChange={e => setEntityName(e.target.value)} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
@@ -704,46 +712,45 @@ export default function Home() {
                 
                 {showAmountField && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">{showAmountLabel}</label>
+                    <label className="form-label">{showAmountLabel}</label>
                     <input type="number" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={amount} onChange={e => setAmount(parseFloat(e.target.value) || 0)} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Agent ID (optional)</label>
+                  <label className="form-label">Agent ID (optional)</label>
                   <input type="text" style={{backgroundColor:"rgba(255,255,255,0.05)"}} value={agentId} onChange={e => setAgentId(e.target.value)} className="w-full border border-white/10 rounded-xl px-4 py-2.5" />
                 </div>
                 
-                <button onClick={verifyDecision} disabled={loading} className="w-full bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-[#A8321C] disabled:opacity-50">
+                <button onClick={verifyDecision} disabled={loading} className="form-action" >
                   {loading ? "Verifying..." : "Verify Decision"}
                 </button>
               </div>
             </div>
             {lastVIC && (
-              <div className={`rounded-2xl border-2 p-8 ${lastVIC.approved ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"}`}>
-                <div className="text-center border-b pb-4 mb-4">
-                  <div className="inline-block bg-transparent px-4 py-1 rounded-full text-xs font-mono">VERIFIABLE INTENT CERTIFICATE</div>
-                  <div className={`text-2xl font-bold font-display mt-3 ${lastVIC.approved ? "text-green-600" : "text-red-600"}`}>{lastVIC.approved ? "APPROVED" : "BLOCKED"}</div>
-                  <div className="text-xs text-gray-400 mt-1">{getDecisionLabel(lastVIC.decision_type)}</div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Certificate ID</span><span className="font-mono text-sm">{lastVIC.vic_id}</span></div>
-                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Timestamp</span><span>{new Date(lastVIC.timestamp).toLocaleString()}</span></div>
-                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Entity</span><span>{lastVIC.vendor}</span></div>
-                  {lastVIC.amount > 0 && <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Amount</span><span>${lastVIC.amount.toLocaleString()}</span></div>}
-                  <div className="flex justify-between py-2 border-b"><span className="text-[#9CA3AF]">Policy Applied</span><span>{lastVIC.policy_name}</span></div>
-                </div>
-                {lastVIC.reasons?.length > 0 && (
-                  <div className="bg-red-100 rounded-xl p-4 mt-4">
-                    <div className="font-semibold text-red-700 text-sm mb-1">Block Reasons</div>
-                    <ul className="list-disc list-inside text-red-600 text-sm">
-                      {lastVIC.reasons.map((r: any, i: number) => <li key={i}>{r}</li>)}
-                    </ul>
-                  </div>
-                )}
-                <div className="mt-4 pt-3 border-t">
-                  <div className="text-xs text-gray-400 font-mono break-all">
-                    <span className="font-semibold">Ed25519 Signature</span> {lastVIC.signature?.slice(0, 64)}...
+              <div className={`system-toast w-full max-w-full ${lastVIC.approved ? 'status-success' : 'status-error'}`}>
+                <svg className="toast-icon" viewBox="0 0 24 24">
+                  {lastVIC.approved ? <use href="#icon-database"/> : <use href="#icon-shield-lock"/>}
+                </svg>
+                <div className="toast-content w-full">
+                  <div className="toast-title">{lastVIC.approved ? "VERIFIABLE_INTENT_CERTIFICATE // APPROVED" : "EXCEPTION_THROWN // BLOCKED"}</div>
+                  <div className="toast-message mt-4">
+                    <div className="grid grid-cols-2 gap-4 font-mono text-xs">
+                      <div><span className="text-[var(--text-muted)]">Certificate ID:</span><br/>{lastVIC.vic_id}</div>
+                      <div><span className="text-[var(--text-muted)]">Timestamp:</span><br/>{new Date(lastVIC.timestamp).toLocaleString()}</div>
+                      <div><span className="text-[var(--text-muted)]">Entity:</span><br/>{lastVIC.vendor}</div>
+                      {lastVIC.amount > 0 && <div><span className="text-[var(--text-muted)]">Amount:</span><br/>${lastVIC.amount.toLocaleString()}</div>}
+                      <div><span className="text-[var(--text-muted)]">Policy:</span><br/>{lastVIC.policy_name}</div>
+                    </div>
+                    {lastVIC.reasons?.length > 0 && (
+                      <div className="mt-4 p-3 border border-[var(--accent-red)] bg-[#D94028]/10 text-[var(--accent-red)] font-mono text-xs">
+                        &gt; BLOCK_REASONS:<br/>
+                        {lastVIC.reasons.map((r: any, i: number) => <div key={i}>- {r}</div>)}
+                      </div>
+                    )}
+                    <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.1)] text-[9px] text-[var(--text-muted)] font-mono break-all">
+                      ED25519_SIGNATURE: {lastVIC.signature?.slice(0, 64)}...
+                    </div>
                   </div>
                 </div>
               </div>
@@ -754,31 +761,33 @@ export default function Home() {
         {activeTab === "simulate" && (
           <div className="space-y-6">
             <div className="glass-panel p-8 text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">AI</div>
+              <div className="w-16 h-16 bg-[#D94028]/10 border border-[var(--accent-red)] rounded-full flex items-center justify-center mx-auto mb-4 text-[var(--accent-red)]">
+                <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><use href="#icon-scan-network"/></svg>
+              </div>
               <h2 className="text-xl font-semibold font-display mb-2">AI Simulator</h2>
               <p className="text-[#9CA3AF] text-sm mb-6">Current Policy: <span className="font-medium">{policy.name}</span></p>
               {policy.status === "draft" && (
                 <p className="text-xs text-yellow-600 mb-4">Warning: Draft policy may not reflect intended rules.</p>
               )}
-              <p className="text-xs text-gray-400 mb-4">Simulates all 7 decision types with multiple test cases</p>
-              <button onClick={runSimulation} disabled={loading} className="bg-purple-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50">
-                {loading ? "Simulating..." : "Run Full Simulation"}
+              <p className="text-xs text-[var(--text-muted)] mb-4">Simulates all 7 decision types with multiple test cases</p>
+              <button onClick={runSimulation} disabled={loading} className="form-action mt-4 max-w-sm mx-auto flex justify-center items-center">
+                {loading ? "> RUNNING_SIMULATION..." : "> EXECUTE_FULL_SIMULATION"}
               </button>
             </div>
 
             {simulationResults.length > 0 && (
               <div className="glass-panel overflow-hidden">
                 <div className="px-6 py-4 bg-transparent border-b border-white/10 flex justify-between items-center">
-                  <h3 className="font-semibold text-white">Simulation Results (Saved to Queue)</h3>
+                  <h3 className="font-semibold text-[var(--text-primary)]">Simulation Results (Saved to Queue)</h3>
                   <Link href="/history" className="text-sm text-primary hover:text-[#A8321C]">View Full Queue</Link>
                 </div>
                 <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
                   {simulationResults.map((result, idx) => (
                     <div key={idx} className={`p-4 flex justify-between items-center ${result.approved ? "hover:bg-green-50" : "hover:bg-red-50"}`}>
                       <div className="flex-1">
-                        <div className="font-medium text-white">{result.vendor}</div>
+                        <div className="font-medium text-[var(--text-primary)]">{result.vendor}</div>
                         <div className="text-sm text-[#9CA3AF]">${result.amount?.toLocaleString()} - {getDecisionLabel(result.decision_type)}</div>
-                        <div className="text-xs text-gray-400 font-mono">{result.vic_id?.slice(0, 20)}...</div>
+                        <div className="text-xs text-[var(--text-muted)] font-mono">{result.vic_id?.slice(0, 20)}...</div>
                       </div>
                       <div className="text-right">
                         <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${result.approved ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
@@ -798,7 +807,7 @@ export default function Home() {
             <h2 className="text-xl font-semibold font-display mb-2">Audit Log</h2>
             <p className="text-[#9CA3AF] text-sm mb-6">Complete history of all AI financial decisions</p>
             {history.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">No decisions yet. Run the AI Simulator or verify a decision.</div>
+              <div className="text-center py-12 text-[var(--text-muted)]">No decisions yet. Run the AI Simulator or verify a decision.</div>
             ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {history.slice(0, 30).map((v,i) => (
@@ -808,7 +817,7 @@ export default function Home() {
                         <div className="flex items-center gap-2 mb-2">
                           <span className={`text-xs font-mono ${v.approved ? "text-green-600" : "text-red-600"}`}>{v.vic_id}</span>
                           <span className={`text-xs px-2 py-0.5 rounded-full ${v.approved ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}>{v.approved ? "APPROVED" : "BLOCKED"}</span>
-                          <span className="text-xs text-gray-400">{getDecisionLabel(v.decision_type)}</span>
+                          <span className="text-xs text-[var(--text-muted)]">{getDecisionLabel(v.decision_type)}</span>
                         </div>
                         <p className="font-medium">{v.vendor}</p>
                         <p className="text-sm text-[#9CA3AF]">${v.amount?.toLocaleString()}</p>
@@ -821,6 +830,24 @@ export default function Home() {
             )}
           </div>
         )}
+      </div>
+
+      <div className="toast-container">
+        {toasts.map(t => (
+          <div key={t.id} className={`system-toast status-${t.type}`}>
+            
+            <svg className="toast-icon" viewBox="0 0 24 24">
+              {t.type === 'success' && <use href="#icon-database"/>}
+              {t.type === 'error' && <use href="#icon-shield-lock"/>}
+              {t.type === 'info' && <use href="#icon-scan-network"/>}
+            </svg>
+
+            <div className="toast-content">
+              <div className="toast-title">{t.title}</div>
+              <div className="toast-message">{t.message}</div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
