@@ -90,7 +90,7 @@ pip install fastapi uvicorn cryptography
 **Terminal 1 – Backend (FastAPI):**
 
 ```bash
-python api.py
+python api/index.py
 ```
 
 Server runs at `http://localhost:8000`
